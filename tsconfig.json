@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"outDir": "./js",
+		"allowJs": true,
+		"allowUnusedLabels": true,
+		"alwaysStrict": true,
+		"charset": "utf-8",
+		"experimentalDecorators": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"noFallthroughCasesInSwitch": false,
+		"noImplicitReturns": true,
+		"pretty": false,
+		"removeComments": true,
+		"rootDir": "./ts",
+		"stripInternal": true,
+		"target": "es2017"
+	},
+	"compileOnSave": true,
+	"exclude": [
+		"typings/Promise.d.ts"
+	],
+	"files": [
+		"ts/index.ts"
+	]
+}
