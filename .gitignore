@@ -1,0 +1,7 @@
+js/
+.secret*
+github
+tsc
+typings
+node_modules/
+typings/
