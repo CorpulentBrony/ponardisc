@@ -21,8 +21,8 @@ export class ArchiveBot {
 	}
 
 	private onReady(): void {
-		this.admins = new Admins(this.client, this.config);
 		console.log("ready");
+		this.admins = new Admins(this.client, this.config);
 	}
 
 	private onReconnecting(): void {

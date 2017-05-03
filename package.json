@@ -45,7 +45,7 @@
     "libsodium-wrappers": ">=0.5.1",
     "node-opus": ">=0.2.6",
     "sodium": ">=2.0.1",
-    "typescript": ">=2.4.0-dev.20170427",
+    "typescript": "next",
     "typings": ">=2.1.1"
   }
 }

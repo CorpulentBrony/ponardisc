@@ -1,5 +1,8 @@
 import { ArchiveBot } from "./ArchiveBot";
 import { Config } from "./Config";
+import * as Process from "process";
+
+Process.on("uncaughtException", console.error);
 
 let bot: ArchiveBot;
 let config: Config;
@@ -8,7 +11,6 @@ async function load(): Promise<void> {
 	config = await Config.load();
 	bot = new ArchiveBot(config);
 	bot.configureClient().login();
-	console.log(config);
 }
 
 load().catch(console.error);

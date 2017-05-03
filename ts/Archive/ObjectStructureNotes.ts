@@ -194,3 +194,7 @@ namespace ArchiveObjects {
 		token: string;
 	}
 }
+
+interface File {
+	 
+}
