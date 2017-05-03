@@ -2,6 +2,9 @@
   "files": "./",
   "name": "ponyarchivediscord",
   "version": "1.0.0-alpha.0",
+  "config": {
+  	"file": "config.json"
+  },
   "description": "Discord bot to archive text channels.",
   "keywords": [
     "archive",
@@ -16,9 +19,10 @@
     "email": "corpulent@brony.email"
   },
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "directories": {
+  	"lib": "ts/"
   },
+  "repository": "CorpulentBrony/ponyarchivediscord",
   "author": {
     "name": "Corpulent Brony",
     "email": "corpulent@brony.email",
@@ -30,6 +34,7 @@
   },
   "private": true,
   "scripts": {
+  	"install": "./tsc",
   	"start": "node js/index.js"
   },
   "dependencies": {
