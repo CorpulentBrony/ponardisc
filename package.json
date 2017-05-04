@@ -34,7 +34,7 @@
   },
   "private": true,
   "scripts": {
-  	"install": "./tsc",
+  	"install": "find js/ -maxdepth 9 -type f ! -name '.*' -delete && ./tsc",
   	"start": "node js/index.js"
   },
   "dependencies": {

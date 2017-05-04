@@ -4,6 +4,14 @@ import * as Stream from "stream";
 
 export type GenericCollection<K extends string, V = K> = { [id in K]: Array<V> };
 
+export function arrayToObject<V extends { [index: string]: V[keyof V] }>(array: { [index: number]: V[keyof V] }, argumentList: V): V {
+	return Object.keys(argumentList).reduce<V>((object: V, key: string, index: number): V => {
+		if (array[index] !== undefined)
+			object[key] = array[index];
+		return object;
+	}, Object.create(null));
+}
+
 export function mapToObject<K extends string, OV, V = OV>(map: Map<K, OV>, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): { [key in K]: V } {
 	return Array.from(map).reduce<{ [key in K]: V }>((object: { [key in K]: V }, [key, value]: [K, OV]): { [key in K]: V } => {
 		object[key] = valueMapFn(value);
