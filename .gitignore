@@ -4,3 +4,4 @@ tsc
 typings
 node_modules/
 typings/
+.npmrc

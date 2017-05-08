@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import * as Discord from "discord.js";
 import * as Fs from "fs";
 import * as Stream from "stream";
 
@@ -22,6 +23,16 @@ export function mapToObject<K extends string, OV, V = OV>(map: Map<K, OV>, value
 export function objectToMap<K extends string, OV, V = OV>(object: { [key in K]: OV }, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): Map<K, V> {
 	return Object.getOwnPropertyNames(object).reduce<Map<K, V>>((map: Map<K, V>, key: K): Map<K, V> => map.set(key, valueMapFn(object[key])), new Map<K, V>());
 }
+
+namespace DiscordUtil {
+	export function isCollectionOf<W extends V, K = any, V = any>(collection: Discord.Collection<K, V>, checkFunction: (item: V) => item is W): collection is Discord.Collection<K, W> {
+		return collection.every((item: V): item is W => checkFunction(item));
+	}
+
+	export function isTextChannel(channel: Discord.Channel): channel is Discord.TextChannel { return channel.type === "text"; }
+}
+
+export { DiscordUtil as Discord };
 
 export namespace File {
 	export class FileError extends Error {};
@@ -120,3 +131,27 @@ export namespace Token {
 		return <string>cache.set(secretsFile, secrets.token).get(secretsFile);
 	}
 }
+
+export namespace Typing {
+	export function isPromise<T = any>(object: T | Promise<T>): object is Promise<T> { return Promise.resolve<T>(object) === object; }
+
+	export function isMapNotOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is Map<K, V> { return !isMapOfPromise<K, V>(map); }
+
+	export function isMapOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is Map<K, Promise<V>> {
+		for (const [key, value] of map)
+			if (isPromise<V>(value))
+				return true;
+		return false;
+	}
+}
+
+export { Queue } from "./Util/Queue";
+export { Stack } from "./Util/Stack";
+
+import * as NodeUtil from "util";
+
+export { NodeUtil as Node };
+
+// export namespace Node {
+// 	export import Util = NodeUtil;
+// }

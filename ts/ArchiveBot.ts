@@ -22,7 +22,7 @@ export class ArchiveBot {
 
 	private onReady(): void {
 		console.log("ready");
-		this.admins = new Admins(this.client, this.config);
+		this.admins = new Admins(this.config, this.client);
 	}
 
 	private onReconnecting(): void {
