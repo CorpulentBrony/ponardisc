@@ -1,14 +1,23 @@
-import { Admins } from "./Admins";
+import * as Commands from "./Commands";
 import { Config } from "./Config";
 import * as Discord from "discord.js";
+import * as Message from "./Message";
 import * as Util from "./Util";
 
 export class ArchiveBot {
-	private admins: Admins;
-	private readonly client: Discord.Client;
-	private readonly config: Config;
+	public readonly adminMessageCollectors: Message.AdminCollectors;
+	public readonly client: Discord.Client;
+	public readonly config: Config;
+	public readonly globalMessageEmitter: Message.GlobalEmitter;
+	private readonly list: Commands.List;
 
-	constructor(config: Config) { [this.client, this.config] = [new Discord.Client({ disabledEvents: ["TYPING_START"] }), config]; }
+	constructor(config: Config) {
+		[this.client, this.config] = [new Discord.Client({ disabledEvents: ["TYPING_START"] }), config];
+		this.config.setClient(this.client);
+		this.globalMessageEmitter = new Message.GlobalEmitter(this);
+		this.adminMessageCollectors = new Message.AdminCollectors(this);
+		this.list = new Commands.List(this);
+	}
 
 	public configureClient(): this {
 		this.client.on("ready", (): void => this.onReady());
@@ -22,7 +31,6 @@ export class ArchiveBot {
 
 	private onReady(): void {
 		console.log("ready");
-		this.admins = new Admins(this.config, this.client);
 	}
 
 	private onReconnecting(): void {

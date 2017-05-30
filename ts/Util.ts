@@ -1,6 +1,8 @@
 import { Buffer } from "buffer";
 import * as Discord from "discord.js";
+import * as Events from "events";
 import * as Fs from "fs";
+import { Map as MyMap } from "./Util/Map";
 import * as Stream from "stream";
 
 export type GenericCollection<K extends string, V = K> = { [id in K]: Array<V> };
@@ -13,15 +15,15 @@ export function arrayToObject<V extends { [index: string]: V[keyof V] }>(array: 
 	}, Object.create(null));
 }
 
-export function mapToObject<K extends string, OV, V = OV>(map: Map<K, OV>, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): { [key in K]: V } {
+export function mapToObject<K extends string, OV, V = OV>(map: MyMap<K, OV>, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): { [key in K]: V } {
 	return Array.from(map).reduce<{ [key in K]: V }>((object: { [key in K]: V }, [key, value]: [K, OV]): { [key in K]: V } => {
 		object[key] = valueMapFn(value);
 		return object;
 	}, Object.create(null));
 }
 
-export function objectToMap<K extends string, OV, V = OV>(object: { [key in K]: OV }, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): Map<K, V> {
-	return Object.getOwnPropertyNames(object).reduce<Map<K, V>>((map: Map<K, V>, key: K): Map<K, V> => map.set(key, valueMapFn(object[key])), new Map<K, V>());
+export function objectToMap<K extends string, OV, V = OV>(object: { [key in K]: OV }, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): MyMap<K, V> {
+	return Object.getOwnPropertyNames(object).reduce<MyMap<K, V>>((map: MyMap<K, V>, key: K): MyMap<K, V> => map.set(key, valueMapFn(object[key])), new MyMap<K, V>());
 }
 
 namespace DiscordUtil {
@@ -29,6 +31,7 @@ namespace DiscordUtil {
 		return collection.every((item: V): item is W => checkFunction(item));
 	}
 
+	export function isDmChannel(channel: Discord.Channel): channel is Discord.DMChannel { return channel.type === "dm"; }
 	export function isTextChannel(channel: Discord.Channel): channel is Discord.TextChannel { return channel.type === "text"; }
 }
 
@@ -145,13 +148,11 @@ export namespace Typing {
 	}
 }
 
+export { Map } from "./Util/Map";
 export { Queue } from "./Util/Queue";
+export { Set } from "./Util/Set";
 export { Stack } from "./Util/Stack";
 
 import * as NodeUtil from "util";
 
 export { NodeUtil as Node };
-
-// export namespace Node {
-// 	export import Util = NodeUtil;
-// }

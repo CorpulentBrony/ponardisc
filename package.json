@@ -1,6 +1,6 @@
 {
   "files": "./",
-  "name": "ponyarchivediscord",
+  "name": "ponardisc",
   "version": "1.0.0-alpha.0",
   "config": {
   	"file": "config.json"
@@ -15,14 +15,14 @@
   ],
   "homepage": "https://iwtcits.com",
   "bugs": {
-    "url": "https://github.com/CorpulentBrony/ponyarchivediscord/issues",
+    "url": "https://github.com/CorpulentBrony/ponardisc/issues",
     "email": "corpulent@brony.email"
   },
   "main": "index.js",
   "directories": {
   	"lib": "ts/"
   },
-  "repository": "CorpulentBrony/ponyarchivediscord",
+  "repository": "CorpulentBrony/ponardisc",
   "author": {
     "name": "Corpulent Brony",
     "email": "corpulent@brony.email",
