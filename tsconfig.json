@@ -5,6 +5,7 @@
 		"allowUnusedLabels": true,
 		"alwaysStrict": true,
 		"charset": "utf-8",
+		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"module": "commonjs",
 		"moduleResolution": "node",

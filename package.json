@@ -3,7 +3,7 @@
   "name": "ponardisc",
   "version": "1.0.0-alpha.0",
   "config": {
-  	"file": "config.json"
+    "file": "config.json"
   },
   "description": "Discord bot to archive text channels.",
   "keywords": [
@@ -20,7 +20,7 @@
   },
   "main": "index.js",
   "directories": {
-  	"lib": "ts/"
+    "lib": "ts/"
   },
   "repository": "CorpulentBrony/ponardisc",
   "author": {
@@ -34,8 +34,8 @@
   },
   "private": true,
   "scripts": {
-  	"install": "find js/ -maxdepth 9 -type f ! -name '.*' -delete && ./tsc",
-  	"start": "node js/index.js"
+    "install": "find js/ -maxdepth 9 ! -name '.*' ! -name 'js' -delete && ./tsc",
+    "start": "node js/index.js"
   },
   "dependencies": {
     "@types/node": ">=7.0.14",
@@ -44,6 +44,7 @@
     "erlpack": "github:hammerandchisel/erlpack#master",
     "libsodium-wrappers": ">=0.5.1",
     "node-opus": ">=0.2.6",
+    "reflect-metadata": ">=0.1.10",
     "sodium": ">=2.0.1",
     "typescript": "next",
     "typings": ">=2.1.1"

@@ -1,5 +1,6 @@
 import * as Discord from "discord.js";
 import * as Events from "events";
+import { Lists } from "./Config/Lists";
 import { Names } from "./Config/Names";
 import { Objects } from "./Config/Objects";
 import * as Process from "process";
@@ -10,6 +11,7 @@ const CONFIG_FILE: string = Process.env.npm_package_config_file;
 export class Config extends Events implements Config.Interface {
 	private _admins: Util.Set<Config.UserId>;
 	private _guilds: Util.Map<Config.GuildId, Util.Set<Config.ChannelId>>;
+	private _lists: Lists;
 	private _names: Names;
 	private _objects: Objects;
 	private _secretsFile: string;
@@ -116,6 +118,12 @@ export class Config extends Events implements Config.Interface {
 			}
 		}
 		return result;
+	}
+
+	public getLists(client: Discord.Client = this.client): Lists {
+		if (this._lists !== undefined)
+			return this._lists;
+		return this._lists = new Lists(this.getNames(client));
 	}
 
 	public getNames(client: Discord.Client = this.client): Names {

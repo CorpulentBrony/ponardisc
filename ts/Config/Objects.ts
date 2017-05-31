@@ -4,7 +4,9 @@ import * as Events from "events";
 import * as Util from "../Util";
 
 export class Objects extends Events implements Objects.Interface {
-	private readonly cache: Cache.InstanceType;
+	private _admins: Util.Map<Config.UserId, Promise<Discord.User>> | undefined;
+	private _channels: Util.Map<Config.GuildId, Discord.Collection<Config.ChannelId, Discord.TextChannel>> | undefined;
+	private _guilds: Discord.Collection<Config.GuildId, Discord.Guild> | undefined;
 	private readonly client: Discord.Client;
 	private readonly config: Config;
 
@@ -18,26 +20,27 @@ export class Objects extends Events implements Objects.Interface {
 		});
 		this.client.on("channelUpdate", (oldChannel: Discord.Channel, newChannel: Discord.Channel): void => this.channelUpdate(newChannel));
 		this.client.on("guildUpdate", (oldGuild: Discord.Guild, newGuild: Discord.Guild): void => this.guildUpdate(newGuild));
-
-		if (Cache.instances.has({ client: this.client, config: this.config }))
-			this.cache = Cache.instances.get({ client: this.client, config: this.config })!;
-		else
-			Cache.instances.set({ client: this.client, config: this.config }, this.cache = {});
 		this.emit("ready", this);
 	}
 
-	public get admins(): Map<Config.UserId, Promise<Discord.User>> {
-		if (this.cache.admins !== undefined)
-			return this.cache.admins;
-		return this.cache.admins = this.config.admins.reduce<Map<Config.UserId, Promise<Discord.User>>>((map: Map<Config.UserId, Promise<Discord.User>>, admin: Config.UserId): Map<Config.UserId, Promise<Discord.User>> => {
+	public get admins(): Util.Map<Config.UserId, Promise<Discord.User>> {
+		if (this._admins !== undefined)
+			return this._admins;
+		return this._admins = this.config.admins.reduce<Util.Map<Config.UserId, Promise<Discord.User>>>((map: Util.Map<Config.UserId, Promise<Discord.User>>, admin: Config.UserId): Util.Map<Config.UserId, Promise<Discord.User>> => {
 			return map.set(admin, this.client.fetchUser(admin));
-		}, new Map<Config.UserId, Promise<Discord.User>>());
+		}, new Util.Map<Config.UserId, Promise<Discord.User>>());
+	}
+
+	public get channels(): Util.Map<Config.GuildId, Discord.Collection<Config.ChannelId, Discord.TextChannel>> {
+		if (this._channels !== undefined)
+			return this._channels;
+		return this._channels = new Util.Map<Config.GuildId, Discord.Collection<Config.ChannelId, Discord.TextChannel>>();
 	}
 
 	public get guilds(): Discord.Collection<Config.GuildId, Discord.Guild> {
-		if (this.cache.guilds !== undefined)
-			return this.cache.guilds;
-		return this.cache.guilds = this.client.guilds.filter((guild: Discord.Guild, id: Config.GuildId): boolean => this.config.hasGuild(id));
+		if (this._guilds !== undefined)
+			return this._guilds;
+		return this._guilds = this.client.guilds.filter((guild: Discord.Guild, id: Config.GuildId): boolean => this.config.hasGuild(id));
 	}
 
 	private channelUpdate(channel: Discord.Channel): void {
@@ -45,16 +48,16 @@ export class Objects extends Events implements Objects.Interface {
 			this.clearCache("channels");
 	}
 
-	private clearCache(type: keyof Cache.InstanceType): void {
-		this.cache[type] = undefined;
+	private clearCache(type: "admins" | "channels" | "guilds"): void {
+		(<any>this)["_" + type] = undefined;
 		this.emit(type + "Modified");
 	}
 
+	public getAdmins(): Util.Map<Config.UserId, Promise<Discord.User>> { return this.admins; }
+
 	public getChannels(guild: Config.GuildId): Discord.Collection<Config.GuildId, Discord.TextChannel> {
-		if (this.cache.channels !== undefined && this.cache.channels.has(guild))
-			return this.cache.channels.get(guild)!;
-		else if (this.cache.channels === undefined)
-			this.cache.channels = new Map<Config.GuildId, Discord.Collection<Config.ChannelId, Discord.TextChannel>>();
+		if (this.channels.has(guild))
+			return this.channels.get(guild)!;
 		let result: Discord.Collection<Config.ChannelId, Discord.Channel> | undefined = undefined;
 
 		if (this.guilds.has(guild)) {
@@ -71,9 +74,11 @@ export class Objects extends Events implements Objects.Interface {
 		}
 
 		if (Util.Discord.isCollectionOf<Discord.TextChannel, Config.ChannelId, Discord.Channel>(result, Util.Discord.isTextChannel))
-			return this.cache.channels.set(guild, result).get(guild)!;
+			return this.channels.set(guild, result).get(guild)!;
 		throw new Error("This is highly unexpected, the channels returned by the Discord client are not all TextChannels.");
 	}
+
+	public getGuilds(): Discord.Collection<Config.GuildId, Discord.Guild> { return this.guilds; }
 
 	private guildUpdate(guild: Discord.Guild): void {
 		if (guild.available && this.config.hasGuild(guild.id))
@@ -89,21 +94,3 @@ export namespace Objects {
 		on(event: "ready", listener: (objects: Objects) => void): this;
 	}
 }
-
-namespace Cache {
-	type InstanceLookupType = { client: Discord.Client, config: Config };
-	export type InstanceType = {
-		admins?: Map<Config.UserId, Promise<Discord.User>>,
-		channels?: Map<Config.GuildId, Discord.Collection<Config.ChannelId, Discord.TextChannel>>,
-		guilds?: Discord.Collection<Config.GuildId, Discord.Guild>
-	};
-
-	export const instances: Map<InstanceLookupType, InstanceType> = new Map<InstanceLookupType, InstanceType>();
-}
-
-/*
-{ discriminator: '8909',
-  tag: 'Corpulent Brony#8909',
-  username: 'Corpulent Brony',
-  toString: '<@81203047132307456>' }
-*/

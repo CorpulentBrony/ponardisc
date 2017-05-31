@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import * as Discord from "discord.js";
 import * as Events from "events";
 import * as Fs from "fs";
-import { Map as MyMap } from "./Util/Map";
+import { Map as UtilMap } from "./Util/Map";
 import * as Stream from "stream";
 
 export type GenericCollection<K extends string, V = K> = { [id in K]: Array<V> };
@@ -15,15 +15,15 @@ export function arrayToObject<V extends { [index: string]: V[keyof V] }>(array: 
 	}, Object.create(null));
 }
 
-export function mapToObject<K extends string, OV, V = OV>(map: MyMap<K, OV>, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): { [key in K]: V } {
+export function mapToObject<K extends string, OV, V = OV>(map: UtilMap<K, OV>, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): { [key in K]: V } {
 	return Array.from(map).reduce<{ [key in K]: V }>((object: { [key in K]: V }, [key, value]: [K, OV]): { [key in K]: V } => {
 		object[key] = valueMapFn(value);
 		return object;
 	}, Object.create(null));
 }
 
-export function objectToMap<K extends string, OV, V = OV>(object: { [key in K]: OV }, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): MyMap<K, V> {
-	return Object.getOwnPropertyNames(object).reduce<MyMap<K, V>>((map: MyMap<K, V>, key: K): MyMap<K, V> => map.set(key, valueMapFn(object[key])), new MyMap<K, V>());
+export function objectToMap<K extends string, OV, V = OV>(object: { [key in K]: OV }, valueMapFn: (value: OV) => V = (value: OV): V => { return <V>(<any>value); }): UtilMap<K, V> {
+	return Object.getOwnPropertyNames(object).reduce<UtilMap<K, V>>((map: UtilMap<K, V>, key: K): UtilMap<K, V> => map.set(key, valueMapFn(object[key])), new UtilMap<K, V>());
 }
 
 namespace DiscordUtil {
@@ -138,9 +138,9 @@ export namespace Token {
 export namespace Typing {
 	export function isPromise<T = any>(object: T | Promise<T>): object is Promise<T> { return Promise.resolve<T>(object) === object; }
 
-	export function isMapNotOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is Map<K, V> { return !isMapOfPromise<K, V>(map); }
+	export function isMapNotOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is UtilMap<K, V> { return !isMapOfPromise<K, V>(map); }
 
-	export function isMapOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is Map<K, Promise<V>> {
+	export function isMapOfPromise<K, V = any>(map: Map<K, V | Promise<V>>): map is UtilMap<K, Promise<V>> {
 		for (const [key, value] of map)
 			if (isPromise<V>(value))
 				return true;

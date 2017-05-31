@@ -4,7 +4,9 @@ declare global {
 	}
 }
 
-class MySet<T> extends Set<T> {
+class UtilSet<T> extends Set<T> {
+	public static of<T>(...elements: Array<T>): UtilSet<T> { return new UtilSet<T>(elements); }
+
 	constructor(iterable?: Iterable<T>) { super(iterable); }
 
 	public reduce<U>(callbackfn: (result: U, value: T, index: number, set: Readonly<this>) => U, initialValue: U): U;
@@ -16,6 +18,8 @@ class MySet<T> extends Set<T> {
 		let result: T | U;
 
 		if (initialValue === undefined) {
+			if (next.done)
+				throw new TypeError("Reduce of empty set with no initial value");
 			[next, result] = [iterator.next(), next.value];
 			i++;
 		} else
@@ -29,4 +33,4 @@ class MySet<T> extends Set<T> {
 	public toJSON(): Array<T> { return Array.from<T>(this); }
 }
 
-export { MySet as Set };
+export { UtilSet as Set };
